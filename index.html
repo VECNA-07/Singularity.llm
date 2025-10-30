@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Singularity</title>
+  <!-- inspired by https://x.com/XorDev and https://x.com/lamps_apple -->
+  
+  <!-- Main font 'Dosis' -->
+  <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@200;400;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 
+    --- SVG "WORMHOLE" FILTER ---
+    This is the "Interstellar" distortion effect.
+    It's hidden, but CSS can use it by its ID.
+  -->
+  <svg width="0" height="0" style="position: absolute;">
+    <filter id="distortion-filter">
+      <!-- Create the "noise" for the melting effect -->
+      <feTurbulence 
+        type="fractalNoise" 
+        baseFrequency="0.01 0.1" 
+        numOctaves="1" 
+        result="turbulence"
+        seed="10"
+      />
+      <!-- Use the noise to "displace" the button text -->
+      <feDisplacementMap 
+        in="SourceGraphic" 
+        in2="turbulence" 
+        scale="12"
+        xChannelSelector="R" 
+        yChannelSelector="G"
+      />
+    </filter>
+  </svg>
+  <!-- End of SVG Filter -->
+
+  <!-- 
+    --- NEW HIDDEN NAVBAR ---
+  -->
+  <nav class="main-nav">
+    
+    <a href="#home" class="nav-logo-link">
+      <!-- This is the correct direct link -->
+      <img src="https://i.ibb.co/LXKHhkPy/f3577383-b5b0-48d2-8e96-1cc92206e5c9-removalai-preview.png" alt="Singularity Logo" class="nav-logo">
+    </a>
+    
+    <ul class="nav-links">
+      <li><a href="#about"><span data-text="About">About</span></a></li>
+      <li><a href="#docs"><span data-text="Docs">Docs</span></a></li>
+      <li><a href="#apis"><span data-text="APIs">APIs</span></a></li>
+      <li><a href="#story"><span data-text="Story">Story</span></a></li>
+      <li><a href="#help"><span data-text="Help">Help</span></a></li>
+    </ul>
+  </nav>
+  <!-- End of Navbar -->
+
+
+  <!-- The WebGL background canvas -->
+  <canvas id="glcanvas"></canvas>
+
+  <!-- Welcome Content -->
+  <div class="welcome-container">
+    
+    <!-- Title: Each letter is a span for the wave animation -->
+    <h1 class="title">
+      <span>S</span><span>I</span><span>N</span><span>G</span><span>U</span><span>L</span><span>A</span><span>R</span><span>I</span><span>T</span><span>Y</span>
+    </h1>
+    
+    <p class="tagline">The event horizon of knowledge</p>
+    
+    <div class="button-container">
+      <!-- Simple <span> tags for the animation -->
+      <a href="#docs" class="btn"><span>Read Docs</span></a>
+      <a href="#try" class="btn btn-primary"><span>Try Singularity</span></a>
+    </div>
+  </div>
+
+  <!-- 
+    --- UPDATED "BY VECNA" LINKS ---
+  -->
+  <ul id="links" class="links">
+    <!-- Updated with your name and link -->
+    <li><a class="who" href="https://www.linkedin.com/in/vecna-jonas/" target="_blank">by Vecna</a></li>
+    
+    <!-- "MathemARTica" link completely removed -->
+  </ul>
+
+  <!-- Load JS -->
+  <script src="blackhole.js"></script>
+
+  <!-- 
+    --- NAVBAR "HINT" SCRIPT ---
+    This script shows the navbar for 3 seconds on page load
+    to let the user know it exists.
+  -->
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const nav = document.querySelector('.main-nav');
+      if (nav) {
+        // 1. Add the .show-hint class to trigger the "appear" animation
+        nav.classList.add('show-hint');
+
+        // 2. Set a timer to remove the class after 3 seconds
+        setTimeout(() => {
+          nav.classList.remove('show-hint');
+        }, 3000); // 3000ms = 3 seconds
+      }
+    });
+  </script>
+</body>
+</html>
+

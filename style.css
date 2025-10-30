@@ -1,0 +1,554 @@
+  html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      /* Set the font for the whole page */
+      font-family: 'Dosis', sans-serif;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      /* This ensures the canvas stays in the background */
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+/* links styles are by maxoffsky.com */
+.links {
+  position: absolute; /* Positions the links block */
+  list-style: none; /* Removes default list bullets */
+  width: 180px;    /* Sets the width of the links block */
+  bottom: 40px;     /* Positions it from the bottom */
+  right: 20px;      /* Positions it from the right */
+  padding: 0;
+  margin: 0;
+  /* Ensures links are on top of the canvas */
+  z-index: 10;
+}
+
+.links li {
+  /* UPDATED: Removed the bottom border */
+  border-bottom: none;
+}
+
+.links li a {
+  transition: opacity 0.2s ease-out; /* Smooth opacity change on hover */
+  font-smoothing: subpixel-antialiased; /* Font rendering optimization */
+  font-family: 'Dosis', sans-serif;   /* Font family */
+  text-transform: uppercase;          /* Uppercase text */
+  text-align: right;                 /* Right-align text */
+  padding: 0.25em 0;                /* Vertical padding */
+  letter-spacing: 2px;               /* Letter spacing */
+  font-weight: 200;                  /* Light font weight */
+  font-size: 12px;                   /* Font size */
+  display: block;                    /* Makes the entire line clickable */
+  width: 100%;                       /* Occupies full width of <li> */
+  opacity: 0.4;                     /* Initial opacity (semi-transparent) */
+  color: #FFF;                       /* White text color */
+  text-decoration: none; /* Good practice for links */
+}
+.links li a:hover {
+  opacity: 0.8; /* Increased opacity on hover */
+}
+.links li .who:before {
+  opacity: 0.5;   /* Semi-transparent prefix */
+  content: '@';    /* Adds "@" before "by msurguy" */
+  float: left;     /* Floats the prefix to the left */
+}
+
+/* "MathemARTica" link style removed as it's gone */
+
+
+/* ===== NEW STYLES ===== */
+
+/* --- "COOL" ANIMATIONS --- */
+
+/* This animation is NOW ONLY FOR THE BUTTON */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 8px 0px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 8px 0px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* --- "GRAVITATIONAL FOCUS" ANIMATION (Unchanged) --- */
+@keyframes cosmicWave {
+  /* This animation defines ONE letter's life */
+  0% {
+    opacity: 0;
+    transform: scaleX(0.5);
+    filter: blur(8px);
+  }
+  /* 0% to 1.5s = Fade In / Focus */
+  17.64% {
+    opacity: 1;
+    transform: scaleX(1);
+    filter: blur(0);
+    text-shadow: 0 0 15px #fff, 0 0 25px #00c3ff, 0 0 35px #00c3ff;
+  }
+  /* 1.5s to 3.5s = Fade Out / Distort */
+  41.17% {
+    opacity: 0; 
+    transform: scaleY(1.5) translateY(25px); 
+    filter: blur(8px);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  }
+  /* 3.5s to 8.5s = Pause */
+  41.18% {
+    opacity: 0;
+    transform: scaleX(0.5);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(0.5);
+    filter: blur(8px);
+  }
+}
+
+/* --- THIS IS THE "KEPT DOING THIS" ANIMATION (Unchanged) --- */
+@keyframes moveTurbulence {
+  0% {
+    baseFrequency: 0.01 0.02; /* Start noise */
+  }
+  50% {
+    baseFrequency: 0.02 0.04; /* Morph noise slowly */
+  }
+  100% {
+    baseFrequency: 0.01 0.02; /* Return */
+  }
+}
+#distortion-filter feTurbulence {
+  animation: moveTurbulence 10s linear infinite alternate;
+}
+
+/* --- "COSMIC FLOAT" ANIMATION FOR LOGO --- */
+@keyframes cosmicFloat {
+  0% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 15px #00c3ff);
+  }
+  50% {
+    transform: translateY(-4px); /* Float up */
+    filter: drop-shadow(0 0 15px #fff) drop-shadow(0 0 25px #00c3ff); /* Brighter glow */
+  }
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 15px #00c3ff);
+  }
+}
+
+
+/* --- NAVBAR STYLES --- */
+.main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px; /* The invisible hover area */
+  z-index: 100; /* On top of everything */
+  transition: all 0.3s ease;
+  /* Use flex to align logo and links */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The "dark glass" panel */
+.main-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65px; /* Height of the glass bar */
+  
+  /* Same as buttons, but starts hidden */
+  background-color: rgba(0, 0, 0, 0.4); 
+  backdrop-filter: blur(8px) brightness(0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  
+  /* Hide it by default */
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.4s ease-out;
+}
+
+/* THIS IS THE "HINT" and HOVER LOGIC:
+  Show the glass panel on hover OR if it has the .show-hint class
+*/
+.main-nav:hover::before,
+.main-nav.show-hint::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- LOGO STYLES (Unchanged) --- */
+.nav-logo-link {
+  position: absolute; /* Position it independently */
+  left: 20px; 
+  top: 15px; 
+  z-index: 101; /* On top of the glass */
+  
+  /* Hide by default */
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  transition-delay: 0s; /* Appears first */
+}
+
+.nav-logo {
+  height: 35px; 
+  width: auto;
+  
+  /* Apply the "Cosmic Float" animation */
+  animation: cosmicFloat 4s ease-in-out infinite; 
+  
+  /* Base state is now set by the animation */
+  transition: filter 0.3s ease;
+}
+
+.nav-logo-link:hover .nav-logo {
+  /* Make the glow stronger on hover, and pause the animation */
+  animation-play-state: paused;
+  filter: drop-shadow(0 0 15px #fff) drop-shadow(0 0 25px #00c3ff);
+}
+
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 65px; /* Match glass panel height */
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  /* UPDATED: Removed the padding. The links are now centered. */
+  /* padding-left: 250px; */
+}
+
+.nav-links li {
+  padding: 0 20px;
+  
+  /* Hide links by default */
+  opacity: 0;
+  transform: translateY(-20px);
+  
+  /* This is the "slowly appear" animation */
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* Show the links & logo on hover OR if it has the .show-hint class
+*/
+.main-nav:hover .nav-links li,
+.main-nav.show-hint .nav-links li,
+.main-nav:hover .nav-logo-link,
+.main-nav.show-hint .nav-logo-link {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered "slow appear" animation for BOTH states */
+.main-nav:hover .nav-logo-link,
+.main-nav.show-hint .nav-logo-link { transition-delay: 0.1s; } /* Logo appears first */
+
+.main-nav:hover .nav-links li:nth-child(1),
+.main-nav.show-hint .nav-links li:nth-child(1) { transition-delay: 0.2s; } /* Then links */
+
+.main-nav:hover .nav-links li:nth-child(2),
+.main-nav.show-hint .nav-links li:nth-child(2) { transition-delay: 0.3s; }
+
+.main-nav:hover .nav-links li:nth-child(3),
+.main-nav.show-hint .nav-links li:nth-child(3) { transition-delay: 0.4s; }
+
+.main-nav:hover .nav-links li:nth-child(4),
+.main-nav.show-hint .nav-links li:nth-child(4) { transition-delay: 0.5s; }
+
+.main-nav:hover .nav-links li:nth-child(5),
+.main-nav.show-hint .nav-links li:nth-child(5) { transition-delay: 0.6s; }
+
+
+.nav-links a {
+  font-family: 'Dosis', sans-serif;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative; /* For span positioning */
+  display: inline-block;
+}
+
+.nav-links a span {
+  display: inline-block;
+  transition: all 0.3s ease;
+  filter: none;
+  opacity: 1;
+}
+
+/* --- 5 DIFFERENT COOL HOVER ANIMATIONS --- */
+
+/* 1. ABOUT (Interstellar Melt) */
+.nav-links li:nth-child(1) a:hover span {
+  filter: url('#distortion-filter');
+  text-shadow: 0 0 10px #fff, 0 0 15px #00c3ff;
+}
+
+/* 2. DOCS (Cosmic Bloom) */
+.nav-links li:nth-child(2) a:hover span {
+  filter: blur(2px);
+  transform: scale(1.1);
+  opacity: 0.8;
+  text-shadow: 0 0 15px #fff, 0 0 25px #00c3ff, 0 0 35px #00c3ff;
+}
+
+/* 3. APIs (Sci-Fi Glitch) */
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.nav-links li:nth-child(3) a span::before,
+.nav-links li:nth-child(3) a span::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #fff;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.nav-links li:nth-child(3) a span::before {
+  left: 2px;
+  text-shadow: -1px 0 #ff3f80; /* Magenta */
+  animation: glitch 0.3s linear infinite;
+}
+.nav-links li:nth-child(3) a span::after {
+  left: -2px;
+  text-shadow: 1px 0 #00c3ff; /* Cyan */
+  animation: glitch 0.3s linear infinite reverse;
+}
+.nav-links li:nth-child(3) a:hover span:not(::before, ::after) {
+  opacity: 0.5; /* Fade out the original text */
+}
+.nav-links li:nth-child(3) a:hover span::before,
+.nav-links li:nth-child(3) a:hover span::after {
+  opacity: 1; /* Show the glitch copies */
+}
+
+
+/* 4. STORY (Gravitational Stretch) */
+.nav-links li:nth-child(4) a:hover span {
+  transform: scaleY(1.4) skewX(-10deg);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* 5. HELP (Cosmic Wind) - NEW COOL ANIMATION */
+.nav-links li:nth-child(5) a:hover span {
+  transform: translateX(25px) skewX(20deg);
+  opacity: 0;
+  filter: blur(5px);
+  text-shadow: 0 0 10px #fff;
+}
+
+
+/* --- BUTTON/TITLE ANIMATIONS (Unchanged) --- */
+
+.welcome-container {
+  /* Center the content */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  /* Ensure it's on top of the canvas */
+  z-index: 5;
+  color: #fff;
+  text-align: center;
+  width: 90%; /* Good for mobile */
+  max-width: 800px; /* Max width for desktop */
+
+  /* Animation to "give it life" */
+  animation: fadeIn 2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* --- TITLE STYLES (Unchanged) --- */
+.title {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 200;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 1rem 0;
+  padding-left: 0.1em;
+  color: #fff;
+}
+
+.title span {
+  display: inline-block;
+  opacity: 0;
+  animation: cosmicWave 8.5s infinite;
+  animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.title span:nth-child(1) { animation-delay: 0.00s; }
+.title span:nth-child(2) { animation-delay: 0.15s; }
+.title span:nth-child(3) { animation-delay: 0.30s; }
+.title span:nth-child(4) { animation-delay: 0.45s; }
+.title span:nth-child(5) { animation-delay: 0.60s; }
+.title span:nth-child(6) { animation-delay: 0.75s; }
+.title span:nth-child(7) { animation-delay: 0.90s; }
+.title span:nth-child(8) { animation-delay: 1.05s; }
+.title span:nth-child(9) { animation-delay: 1.20s; }
+.title span:nth-child(10) { animation-delay: 1.35s; }
+.title span:nth-child(11) { animation-delay: 1.50s; }
+
+
+.tagline {
+  font-size: clamp(1rem, 3vw, 1.25rem); /* Responsive font size */
+  font-weight: 400;
+  letter-spacing: 2px;
+  margin: 0 0 2.5rem 0;
+  opacity: 0.8;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  font-family: 'Dosis', sans-serif;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column; /* Stack on mobile */
+  gap: 1rem; /* Space between buttons */
+  justify-content: center;
+  align-items: center;
+}
+
+/* On screens wider than 600px, put buttons side-by-side */
+@media (min-width: 600px) {
+  .button-container {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+/* --- "DARK GLASS" BUTTON STYLES (Unchanged) --- */
+.btn {
+  /* The button is now just a container for positioning */
+  display: inline-block;
+  position: relative; /* Crucial for z-index */
+  padding: 10px 24px;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  
+  /* Base state */
+  transform: scale(1);
+  transition: all 0.3s ease;
+  
+  /* Fixes a Safari bug where text isn't clickable */
+  color: transparent; 
+}
+
+/* This is the new "dark glass" panel */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50px;
+  
+  /* Put the glass layer at z-index 1 */
+  z-index: 1; 
+  
+  /* Base "dark glass" state */
+  background-color: rgba(0, 0, 0, 0.4); 
+  backdrop-filter: blur(8px) brightness(0.8);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: none;
+  
+  /* Make the glass transition smoothly */
+  transition: all 0.3s ease;
+}
+
+/* Style for the text span INSIDE the button */
+.btn span {
+  display: inline-block; /* Required for transform */
+  /* Lifts the text ON TOP of the glass panel */
+  position: relative;
+  z-index: 2; 
+  color: #fff; /* Make the text visible */
+  
+  /* Base state of text */
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  text-shadow: none;
+  filter: none; /* No filter by default */
+}
+
+/* --- "SPACE-TIME DISTORTION" HOVER EFFECT (Unchanged) --- */
+.btn:hover {
+  /* 1. Zoom In (Container) */
+  transform: scale(1.05); 
+}
+
+/* Animate the glass panel */
+.btn:hover::before {
+  /* 2. Intensify Glass (Panel) */
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px) brightness(0.8);
+  border-color: #fff;
+
+  /* 3. Charge Border (Panel) */
+  box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.6);
+}
+
+/* Animate the text */
+.btn:hover span {
+  /* 1. "MELTING" (Text) */
+  /* This applies the moving filter */
+  filter: url('#distortion-filter');
+  
+  /* 2. "Cosmic Glow" (Text) - Same as title */
+  text-shadow: 0 0 10px #fff, 0 0 15px #00c3ff, 0 0 25px #00c3ff;
+}
+
+
+/* "Try Singularity" - Primary button */
+.btn.btn-primary::before {
+  /* Apply the pulseGlow to the glass panel */
+  animation: pulseGlow 2.5s infinite alternate ease-in-out;
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
